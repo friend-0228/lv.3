@@ -1,7 +1,17 @@
 import express from 'express';
 import { prisma } from '../utils/prisma/index.js';
+import joi from 'joi';
+
 
 const router = express.Router();
+
+const createCategorySchema = joi.object({
+    name: joi.string().min(1).max(10).required().messages({
+        'string.empty': '제목을 입력해주세요.',
+        'string.min': '제목은 최소 1글자 이상이어야 합니다.',
+        'string.max': '제목은 최대 10글자를 초과할 수 없습니다.'
+    })
+})
 
 // 카테고리 등록
 router.post('/categories', async (req, res, next) => {
@@ -23,10 +33,8 @@ router.post('/categories', async (req, res, next) => {
 
         return res.status(201).json({ message: '카테고리를 등록하였습니다' });
     } catch (error) {
-        console.error('카테고리 생성 중 오류:', error);
-        return res.status(500).json({ error: '카테고리를 생성하는 중에 오류가 발생했습니다.' });
-    }
-});
+    next(error)
+    }});
 
 /** 카테고리 전체 목록 조회 API **/
 router.get('/categories', async (req, res, next) => {
@@ -42,8 +50,10 @@ router.get('/categories', async (req, res, next) => {
         // 조회된 카테고리 응답
         return res.status(200).json({ data: categories });
     } catch (error) {
-        console.error('카테고리 조회 중 오류:', error);
-        return res.status(500).json({ error: '카테고리를 조회하는 중에 오류가 발생했습니다.' });
+        // console.error('카테고리 조회 중 오류:', error);
+        // return res.status(500).json({ error: '카테고리를 조회하는 중에 오류가 발생했습니다.' });
+        next(error)
+
     }
 });
 

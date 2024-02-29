@@ -1,7 +1,23 @@
 import express from 'express';
 import { prisma } from '../utils/prisma/index.js';
+import joi from 'joi';
+
 
 const router = express.Router();
+
+// const createCategorySchema = joi.object({
+//     name: joi.string().min(1).max(10).required().messages({
+//         'string.empty': '제목을 입력해주세요.',
+//         'string.min': '제목은 최소 1글자 이상이어야 합니다.',
+//         'string.max': '제목은 최대 10글자를 초과할 수 없습니다.'
+//     }),
+//     description:joi.string().min(1).max(50).required().messages({
+//         'string.empty': '제목을 입력해주세요.',
+//         'string.min': '제목은 최소 1글자 이상이어야 합니다.',
+//         'string.max': '제목은 최대 50글자를 초과할 수 없습니다.' 
+//     }),
+//     image
+// })
 
 // 메뉴 등록 API
 router.post('/categories/:categoryId/menus', async (req, res, next) => {
@@ -62,5 +78,102 @@ router.get('/categories/:categoryId/menus', async (req, res, next) => {
     });
     return res.status(200).json({ data: menus });
 });
+
+
+//메뉴 상세조회
+router.get('/categories/:categoryId/menus/:menuId', async (req, res) => {
+    const{ categoryId, menuId } = req.params;
+    const category = await prisma.categories.findUnique({
+        where: {
+            categoryId: +categoryId
+        }
+    })
+    if(!category){
+        res.status(404).json({ message: '존재하지 않는 카테고리 입니다.'})
+    }
+    const menu = await prisma.menus.findUnique({
+        where: {
+            menuId: +menuId
+        }
+    })
+    if(!menu){
+        res.status(404).json({ message: '존재하지 않는 메뉴 입니다.'})
+    }
+
+    const categoryMenus = await prisma.menus.findUnique({
+        where: {
+            categoryId: +categoryId,
+            menuId: +menuId
+        }
+    })
+    return res.status(200).json({data: categoryMenus});
+})
+
+
+//메뉴 수정
+router.patch('/categories/:categoryId/menus/:menuId', async (req, res,next)=>{
+    const{ categoryId, menuId } = req.params;
+    const { name, description, image, price, order, status } = req.body;
+    const category = await prisma.categories.findUnique({
+        where: {
+            categoryId: +categoryId
+        }
+    })
+    if(!category){
+        res.status(404).json({ message: '존재하지 않는 카테고리 입니다.'})
+    }
+    const menu = await prisma.menus.findUnique({
+        where: {
+            menuId: +menuId
+        }
+    })
+    if(!menu){
+        res.status(404).json({ message: '존재하지 않는 메뉴 입니다.'})
+    }
+    const newMenu = await prisma.menus.update({
+        where: {
+            categoryId: +categoryId,
+            menuId: +menuId
+        },
+        data: {
+            name: name,
+            description: description,
+            image: image,
+            price: price,
+            order: order,
+            status: status
+        }
+    })
+    return res.status(200).json({message:"메뉴를 수정하였습니다."});
+})
+
+
+//메뉴 삭제
+router.delete('/categories/:categoryId/menus/:menuId', async (req, res,next)=>{
+    const{ categoryId, menuId } = req.params;
+    const category = await prisma.categories.findUnique({
+        where: {
+            categoryId: +categoryId
+        }
+    })
+    if(!category){
+        res.status(404).json({ message: '존재하지 않는 카테고리 입니다.'})
+    }
+    const menu = await prisma.menus.findUnique({
+        where: {
+            menuId: +menuId
+        }
+    })
+    if(!menu){
+        res.status(404).json({ message: '존재하지 않는 메뉴 입니다.'})
+    }
+    await prisma.menus.delete({
+        where: {
+            menuId: +menuId
+        }
+    })
+    return res.status(200).json({message: "메뉴삭제완료"});
+})
+
 
 export default router;
