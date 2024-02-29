@@ -51,30 +51,30 @@ router.get('/categories', async (req, res, next) => {
 
 /** 카테고리 정보 변경 API **/
 router.patch('/categories/:categoryId', async(req, res, next) => {
-    const {categoryId} = req.params;
-    const {name, order} =req.body;
 
-    if(!categoryId ||!name ||!order){
-        return res.status(400).json({message : '데이터 형식이 올바르지 않습니다.'})
-    }
+    try {
+        const { categoryId } = req.params;
+        const { name, order } = req.body;
 
-    const category = await prisma.categories.findFirst({
-        where : {categoryId : +categoryId}
-    });
+        if (!categoryId || !name || !order) {
+            return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
+        }
 
-    if(!category){
-        return res.status(404).json({message : '존재하지 않는 카테고리입니다.'})
-    };
+        const category = await prisma.categories.findFirst({
+            where: { categoryId: +categoryId }
+        });
 
-    try{
+        if (!category) {
+            return res.status(404).json({ message: '존재하지 않는 카테고리입니다.' });
+        }
 
-    await prisma.categories.update({
-        where : {categoryId : +categoryId},
-        data : {name, order},
-    });
+        await prisma.categories.update({
+            where: { categoryId: +categoryId },
+            data: { name, order },
+        });
 
-    return res.status(200).json({message : '카테고리 정보를 수정하였습니다.'})
-    }catch (error) {
+        return res.status(200).json({ message: '카테고리 정보를 수정하였습니다.' });
+    } catch (error) {
         next(error);
     }
 });
@@ -99,6 +99,5 @@ router.delete('/categories/:categoryId', async (req, res, next) => {
     return res.status(200).json({ data: '카테고리 정보를 삭제하였습니다.' });
 });
 
-console.log("깃 커밋 테스트~!!!!!!!!!")
 
 export default router;
