@@ -1,25 +1,8 @@
 import express from 'express';
 import { prisma } from '../utils/prisma/index.js';
-import joi from 'joi';
+import { createMenuSchema } from '../../middlewares/validation/menuValidation.js';
 
 const router = express.Router();
-
-const createMenuSchema = joi.object({
-    name: joi.string().min(1).max(10).required().messages({
-        'string.empty': '제목을 입력해주세요.',
-        'string.min': '제목은 최소 1글자 이상이어야 합니다.',
-        'string.max': '제목은 최대 10글자를 초과할 수 없습니다.',
-    }),
-    description: joi.string().min(1).max(50).required().messages({
-        'string.empty': '제목을 입력해주세요.',
-        'string.min': '제목은 최소 1글자 이상이어야 합니다.',
-        'string.max': '제목은 최대 50글자를 초과할 수 없습니다.',
-    }),
-    image: joi.string().min(1).max(200).required().messages({}),
-    price: joi.number().min(0).required().messages({
-        'number.base': '메뉴 가격은 0보다 작을 수 없습니다.',
-    }),
-});
 
 // 메뉴 등록 API
 router.post('/categories/:categoryId/menus', async (req, res, next) => {
@@ -53,33 +36,6 @@ router.post('/categories/:categoryId/menus', async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-<<<<<<< Updated upstream
-=======
-
-    const category = await prisma.categories.findFirst({ where: { categoryId: +categoryId } });
-    if (!category) {
-        return res.status(404).json({ message: '존재하지 않는 카테고리입니다.' });
-    }
-
-    // 카테고리 별로 주문(order) 개수(count)
-    const order = await prisma.menus.count({ where: { categoryId: +categoryId } });
-    // 메뉴 생성
-    const menu = await prisma.menus.create({
-        data: {
-            name: name,
-            description: description,
-            image: image,
-            price: price,
-            order: order + 1,
-            categoryId: +categoryId,
-        },
-    });
-
-    if (price <= 0) {
-        return res.status(400).json({ message: '메뉴 가격은 0보다 작을 수 없습니다.' });
-    }
-    return res.status(201).json({ message: '메뉴를 등록하였습니다.' });
->>>>>>> Stashed changes
 });
 
 // 카테고리별 메뉴 조회 API

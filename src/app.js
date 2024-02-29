@@ -1,8 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import categoryRouter from './routes/categories.router.js'
-import MenuRouter from './routes/menus.router.js'
-import ErrorMiddleware from '../middlewares/errormiddleware.js'
+import categoryRouter from './routes/categories.router.js';
+import MenuRouter from './routes/menus.router.js';
+import ErrorMiddleware from '../middlewares/errormiddleware.js';
 
 dotenv.config();
 console.log(process.env.DATABASE_URL);
@@ -11,7 +11,7 @@ const app = express();
 const PORT = 3020;
 
 app.use(express.json());
-app.use('/', [categoryRouter, MenuRouter]);
+app.use('/api', [categoryRouter, MenuRouter]);
 
 app.use(ErrorMiddleware);
 
