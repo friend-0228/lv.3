@@ -61,7 +61,31 @@ router.get('/categories', async (req, res, next) => {
 router.patch('/categories/:categoryId', async(req, res, next) => {
     const {categoryId} = req.params;
     const {name, order} =req.body;
-})
+
+    if(!categoryId ||!name ||!order){
+        return res.status(400).json({message : '데이터 형식이 올바르지 않습니다.'})
+    }
+
+    const category = await prisma.categories.findFirst({
+        where : {categoryId : +categoryId}
+    });
+
+    if(!category){
+        return res.status(404).json({message : '존재하지 않는 카테고리입니다.'})
+    };
+
+    try{
+
+    await prisma.categories.update({
+        where : {categoryId : +categoryId},
+        data : {name, order},
+    });
+
+    return res.status(200).json({message : '카테고리 정보를 수정하였습니다.'})
+    }catch (error) {
+        next(error);
+    }
+});
 
 
 
