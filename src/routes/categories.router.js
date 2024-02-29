@@ -1,16 +1,8 @@
 import express from 'express';
 import { prisma } from '../utils/prisma/index.js';
-import joi from 'joi';
+import { createCategorySchema } from '../../middlewares/validation/categoryValidation.js';
 
 const router = express.Router();
-
-const createCategorySchema = joi.object({
-    name: joi.string().min(1).max(10).required().messages({
-        'string.empty': '제목을 입력해주세요.',
-        'string.min': '제목은 최소 1글자 이상이어야 합니다.',
-        'string.max': '제목은 최대 10글자를 초과할 수 없습니다.',
-    }),
-});
 
 // 카테고리 등록
 router.post('/categories', async (req, res, next) => {
@@ -19,7 +11,7 @@ router.post('/categories', async (req, res, next) => {
 
         // body를 입력받지 못한 경우 400 에러
         if (!name) {
-            return res.status(400).json({ error: '데이터 형식이 올바르지 않습니다' });
+            return res.status(400).json({ errorMessage: '데이터 형식이 올바르지 않습니다' });
         }
 
         // 카테고리 생성
@@ -98,6 +90,5 @@ router.delete('/categories/:categoryId', async (req, res, next) => {
     await prisma.categories.delete({ where: { categoryId: +categoryId } });
     return res.status(200).json({ data: '카테고리 정보를 삭제하였습니다.' });
 });
-
 
 export default router;
