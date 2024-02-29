@@ -56,6 +56,15 @@ router.get("/categories", async (req, res, next) => {
   }
 });
 
+
+/** 카테고리 정보 변경 API **/
+router.patch('/categories/:categoryId', async(req, res, next) => {
+    const {categoryId} = req.params;
+    const {name, order} =req.body;
+})
+
+
+
 // 카테고리 삭제 API
 router.delete("/categories/:categoryId", async (req, res, next) => {
   const { categoryId } = req.params;
