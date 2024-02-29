@@ -39,19 +39,11 @@ router.post('/categories', async (req, res, next) => {
 /** 카테고리 전체 목록 조회 API **/
 router.get('/categories', async (req, res, next) => {
     try {
-        // Prisma를 사용하여 모든 카테고리 조회
         const categories = await prisma.categories.findMany({
-            // order를 기준으로 정렬
             orderBy: { order: 'asc' },
-            // id, name, order 필드만 선택
-            select: { categoryId: true, name: true, order: true },
         });
-
-        // 조회된 카테고리 응답
         return res.status(200).json({ data: categories });
     } catch (error) {
-        // console.error('카테고리 조회 중 오류:', error);
-        // return res.status(500).json({ error: '카테고리를 조회하는 중에 오류가 발생했습니다.' });
         next(error);
     }
 });
