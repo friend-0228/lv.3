@@ -53,6 +53,33 @@ router.post('/categories/:categoryId/menus', async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+<<<<<<< Updated upstream
+=======
+
+    const category = await prisma.categories.findFirst({ where: { categoryId: +categoryId } });
+    if (!category) {
+        return res.status(404).json({ message: '존재하지 않는 카테고리입니다.' });
+    }
+
+    // 카테고리 별로 주문(order) 개수(count)
+    const order = await prisma.menus.count({ where: { categoryId: +categoryId } });
+    // 메뉴 생성
+    const menu = await prisma.menus.create({
+        data: {
+            name: name,
+            description: description,
+            image: image,
+            price: price,
+            order: order + 1,
+            categoryId: +categoryId,
+        },
+    });
+
+    if (price <= 0) {
+        return res.status(400).json({ message: '메뉴 가격은 0보다 작을 수 없습니다.' });
+    }
+    return res.status(201).json({ message: '메뉴를 등록하였습니다.' });
+>>>>>>> Stashed changes
 });
 
 // 카테고리별 메뉴 조회 API

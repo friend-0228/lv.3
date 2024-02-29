@@ -74,6 +74,6 @@ router.delete('/categories/:categoryId', async (req, res, next) => {
     return res.status(200).json({ data: '카테고리 정보를 삭제하였습니다.' });
 });
 
-console.log('깃 콘솔 테스트');
+console.log("깃 커밋 테스트~!!!!!!!!!")
 
 export default router;
