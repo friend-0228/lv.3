@@ -31,22 +31,47 @@ router.post('/categories', async (req, res, next) => {
 /** 카테고리 전체 목록 조회 API **/
 router.get('/categories', async (req, res, next) => {
     try {
-        // Prisma를 사용하여 모든 카테고리 조회
         const categories = await prisma.categories.findMany({
-            // order를 기준으로 정렬
             orderBy: { order: 'asc' },
-            // id, name, order 필드만 선택
-            select: { categoryId: true, name: true, order: true },
         });
-
-        // 조회된 카테고리 응답
         return res.status(200).json({ data: categories });
     } catch (error) {
-        // console.error('카테고리 조회 중 오류:', error);
-        // return res.status(500).json({ error: '카테고리를 조회하는 중에 오류가 발생했습니다.' });
         next(error);
     }
 });
+
+
+/** 카테고리 정보 변경 API **/
+router.patch('/categories/:categoryId', async(req, res, next) => {
+
+    try {
+        const { categoryId } = req.params;
+        const { name, order } = req.body;
+
+        if (!categoryId || !name || !order) {
+            return res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
+        }
+
+        const category = await prisma.categories.findFirst({
+            where: { categoryId: +categoryId }
+        });
+
+        if (!category) {
+            return res.status(404).json({ message: '존재하지 않는 카테고리입니다.' });
+        }
+
+        await prisma.categories.update({
+            where: { categoryId: +categoryId },
+            data: { name, order },
+        });
+
+        return res.status(200).json({ message: '카테고리 정보를 수정하였습니다.' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 
 // 카테고리 삭제 API
 router.delete('/categories/:categoryId', async (req, res, next) => {

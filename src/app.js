@@ -11,7 +11,9 @@ const app = express();
 const PORT = 3020;
 
 app.use(express.json());
-app.use('/api', [categoryRouter, MenuRouter]);
+
+app.use('/api/', [categoryRouter, MenuRouter]);
+
 
 app.use(ErrorMiddleware);
 
