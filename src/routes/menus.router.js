@@ -36,7 +36,6 @@ router.post('/categories/:categoryId/menus', async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-
 });
 
 // 카테고리별 메뉴 조회 API
